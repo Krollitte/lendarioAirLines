@@ -1,0 +1,22 @@
+.container{
+  background-color: green;
+  border-radius: 30px;
+}
+
+.container h3 {
+  color: #000;
+}
+
+.ticket-item {
+  background-color: #009dff60;
+}
+
+form {
+  background-color: green;
+}
+
+.checkout-area {
+  display: flex;
+
+  background-color: green;
+}

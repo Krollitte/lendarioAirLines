@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    </head>
+    <script>
+        function validsenha(){
+          if (cadUsuario.senha.value == cadUsuario.senha1.value){
+            return true;
+          }
+          else{
+            alert("senha errada");
+            return false;
+          }
+    
+        }
+      </script>
+      <body>
+        <h1>The input formaction attribute</h1>
+    
+        <p>
+          The formaction attribute specifies the URL of a file that will process the
+          input when the form is submitted.
+        </p>
+    
+        <form name="cadUsuario" onsubmit="return validsenha();">
+          <label for="fname">First name:</label>
+          <input type="text" id="fname" name="fname" /><br /><br />
+          <label for="lname">Last name:</label>
+          <input type="text" id="lname" name="lname" /><br /><br />
+          <label for="confsenha">senha</label>
+          <input type="text" for="confsenha" name="senha" /><br /><br />
+          <label for="confsenha">confirme senha</label>
+          <input type="text" for="confsenha" name="senha1" /><br /><br />
+          <input type="submit" value="Submit" />
+        </form>, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>

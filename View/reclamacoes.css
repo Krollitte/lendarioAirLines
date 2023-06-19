@@ -1,0 +1,46 @@
+.modal-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-body label {
+  color: #000;
+}
+
+.modal-body input {
+  border: 1px solid;
+  border-color: #000;
+}
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.form-group {
+  width: 70%;
+}
+
+main {
+  height: 80vh;
+}
+
+h2 {
+  color: #fff !important;
+}
+
+label {
+  color: #000;
+}
+
+form {
+  padding: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 30px;
+}

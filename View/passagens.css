@@ -1,0 +1,48 @@
+.container {
+  heigth: 80vh !important;
+}
+
+.container-fluid {
+  background-color: #0b1aa1;
+}
+
+.best-selling-tickets {
+}
+
+.ticket-item {
+  border-radius: 20px;
+  background-color: #fff;
+  margin-bottom: 20px;
+}
+
+.ticket-item:hover {
+  border-radius: 20px;
+  background-color: #ffffff50;
+  margin-bottom: 20px;
+}
+
+.origem-destino {
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+label {
+  color: #000000;
+}
+
+.destino-item {
+  color: #000;
+  heigth: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.footer-from-tickets-search-result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

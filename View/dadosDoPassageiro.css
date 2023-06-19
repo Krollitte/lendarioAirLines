@@ -1,0 +1,9 @@
+.container {
+  heigth: 80vh !important;
+  background-color: #fff;
+  border-radius: 30px;
+}
+
+.container h3 {
+  color: #000;
+}
