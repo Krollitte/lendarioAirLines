@@ -55,7 +55,7 @@ class Passagem
                 array_push($this->listaVooUsuario, $voo);
             }
 
-            var_dump(count($this->listaPassagensUsuario));
+          
 
 
         } catch (PDOException $e) {
