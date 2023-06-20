@@ -64,6 +64,9 @@
                                 }else{
                                     echo '  <br/>CheckIn realizado';
                                 } ?>
+                        <br/>
+                        <label >Status</label>
+                                <?php echo  $passagem->getlistaPassagensUsuario()[$cont]->getStatusPassagem(); ?>
                             </div>
                         </div>
                     </div>   
