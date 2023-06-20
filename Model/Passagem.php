@@ -10,6 +10,7 @@ class Passagem
     private $vooId;
     private $numeroCadeira;
     private $codPassagem;
+    private $validaCheckIn;
     private $listaPassagensUsuario = array();
     private $listaVooUsuario = array();
 
@@ -41,6 +42,8 @@ class Passagem
                 $passagem->setcodPassagem($linha['codPassagem']);
                 $passagem->setStatusPassagem($linha['statusPassagem']);
                 $passagem->setNumeroCadeira($linha['numeroCadeira']);
+                $passagem->setValidaCheckIn($linha['validaCheckIn']);
+                
                 
                 $voo = new Voo();
                 $voo->setNumeroVoo($linha['numeroVoo']);
@@ -52,54 +55,26 @@ class Passagem
                 array_push($this->listaVooUsuario, $voo);
             }
 
+            var_dump(count($this->listaPassagensUsuario));
+
 
         } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
         }
     }
 
-    public function listaPassagensParaCancelamento()
-    {
-        try {
-            $banco = Conexao::getConexao();
-            $sql = $banco->prepare("SELECT passagemId, codPassagem, v.numeroVoo, v.origem, v.destino, statusReserva, v.valor
-            FROM dblendarioairlines.passagens p, dblendarioairlines.voos v WHERE p.vooId = v.vooId AND passagemId = :passagemId");
-
-            $sql->bindParam("passagemId", $passagemId);
-            $passagemId = $this->passagemId;
-            $sql->execute();
-            $resultado = $sql->setFetchMode(PDO::FETCH_ASSOC);
-            $linha = $sql->fetch(PDO::FETCH_ASSOC);
-
-            if ($linha) {
-                $passagem = new Passagem();
-                $passagem->setPassagemId($linha['passagemId']);
-                $passagem->setcodPassagem($linha['codPassagem']);
-                $passagem->setStatusPassagem($linha['statusPassagem']);
-
-                $voo = new Voo();
-                $voo->setNumeroVoo($linha['numeroVoo']);
-                $voo->setOrigem($linha['origem']);
-                $voo->setDestino($linha['destino']);
-                $voo->setCodigoPassagem($linha['codPassagem']);
-                $voo->setValor($linha['valor']);
-
-                array_push($this->listaPassagensUsuario, $passagem);
-                array_push($this->listaVooUsuario, $voo);
-            }
-        } catch (PDOException $e) {
-            echo "Connection failed: " . $e->getMessage();
-        }
-    }
+  
 
     public function cancelaPassagem()
     {
         $codPassagem = $this->codPassagem;
         try {
             $banco = Conexao::getConexao();
-            $sql = $banco->prepare("UPDATE dblendarioairlines.passagens SET statusPassagem = 'CANCELADA' WHERE codPassagem LIKE :codPassagem");
+            $sql = $banco->prepare("UPDATE dblendarioairlines.passagens SET statusPassagem = 'CANCELADA' WHERE codPassagem LIKE :codPassagem AND usuarioId= :usuarioId AND validaCheckin !=1");
             $codPassagem ='%' .$codPassagem .'%';
+            $usuarioId = $this->usuarioId;
             $sql->bindValue("codPassagem", $codPassagem);
+            $sql->bindValue("usuarioId", $usuarioId);
             
             $codPassagem = $this->codPassagem;
 
@@ -126,10 +101,22 @@ class Passagem
         return $this->usuarioId;
     }
 
+    public function getValidaCheckIn()
+    {
+        return $this->validaCheckIn;
+    }
+
+
+
+    public function setValidaCheckIn($validaCheckIn)
+    {
+        $this->validaCheckIn = $validaCheckIn;
+    }
     public function setUsuarioId($usuarioId)
     {
         $this->usuarioId = $usuarioId;
     }
+
 
     public function getStatusPassagem()
     {

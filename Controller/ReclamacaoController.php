@@ -26,13 +26,6 @@
                 $reclamacao->cancelaReclamacao();
                 $reclamacao->listaPassagensParaReclamacao();
                 require_once "View/minhasReclamacoes.php";
-            } else if($acao =="LDR"){
-                $reclamacao = new Reclamacao(); 
-                $reclamacao->setReclamacaoId($_POST['reclamacaoId']);
-                $reclamacao->setReclamacaoTexto($_POST['reclamacaoTexto']);
-                $reclamacao->setStatusReclamacao($_POST['statusReclamacao']);
-                $reclamacao->setCodPassagem($_POST['codPassagem']);
-                require_once "View que vai mostrar os detalhes de uma reclamação";
             }
         }
     }

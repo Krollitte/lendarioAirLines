@@ -1,8 +1,9 @@
-<?php 
+<?php
 
 require_once("Model/Conexao.php");
 
-class Voo {
+class Voo
+{
     private $vooId;
     private $numeroVoo;
     private $valor;
@@ -17,70 +18,59 @@ class Voo {
     private $listaVoosVolta = array();
     private $dadosVoo = array();
 
-    public function buscaVoo($dataIda, $dataVolta){
-        try{
-            $conexao = Conexao::getConexao();
-            $sqlIda = $conexao->prepare("SELECT vooId, tipoVoo, origem, destino, dataHoraPartida, numeroVoo, valor, dataHoraChegada, qtdPassagem 
-            FROM dblendarioairlines.voos where origem=:origem AND destino=:destino AND qtdPassagem > 0 AND DATE(dataHoraPartida) = :dataIda");
+    private function a($dataVoo, $lugar1, $lugar2, $sentido)
+    {
+        $conexao = Conexao::getConexao();
 
-            $sqlVolta = $conexao->prepare("SELECT vooId, tipoVoo, origem, destino, dataHoraPartida, numeroVoo, valor, dataHoraChegada, qtdPassagem 
-            FROM dblendarioairlines.voos where origem=:destino AND destino=:origem AND qtdPassagem > 0 AND DATE(dataHoraPartida) = :dataVolta");
+        $buscaBanco = $conexao->prepare("SELECT vooId, tipoVoo, origem, destino, dataHoraPartida, numeroVoo, valor, dataHoraChegada, qtdPassagem 
+                FROM dblendarioairlines.voos where origem=:lugar1 AND destino=:lugar2 AND qtdPassagem > 0 AND DATE(dataHoraPartida) = :dataVoo");
 
-            
-           
-            $sqlIda->bindParam("origem", $origem);
-            $sqlIda->bindParam("destino", $destino);
-            $sqlIda->bindParam("dataIda", $dataIda);
-            $sqlVolta->bindParam("origem", $origem);
-            $sqlVolta->bindParam("destino", $destino);
-            $sqlVolta->bindParam("dataVolta", $dataVolta);
-            
+        $buscaBanco->bindParam("lugar1", $lugar1);
+        $buscaBanco->bindParam("lugar2", $lugar2);
+
+        $buscaBanco->bindParam("dataVoo", $dataVoo);
+
+
+
+
+
+        $buscaBanco->execute();
+
+        $resultado = $buscaBanco->setFetchMode(PDO::FETCH_ASSOC);
+        while ($linha = $buscaBanco->fetch(PDO::FETCH_ASSOC)) {
+            $voo = new Voo();
+            $voo->setVooId($linha['vooId']);
+            $voo->setTipoVoo($linha['tipoVoo']);
+            $voo->setOrigem($linha['origem']);
+            $voo->setDestino($linha['destino']);
+            $voo->setDataHoraPartida($linha['dataHoraPartida']);
+            $voo->setNumeroVoo($linha['numeroVoo']);
+            $voo->setValor($linha['valor']);
+            if ($sentido == 'ida') {
+                array_push($this->listaVoosIda, $voo);
+            } else {
+                array_push($this->listaVoosVolta, $voo);
+            }
+        }
+    }
+
+
+    public function buscaVoo($dataIda, $dataVolta)
+    {
+        try {
             $origem = $this->origem;
             $destino = $this->destino;
 
-            $sqlIda->execute();
-
-            $resultado = $sqlIda->setFetchMode(PDO::FETCH_ASSOC);
-            while ($linha = $sqlIda->fetch(PDO::FETCH_ASSOC)) {
-                $voo = new Voo();
-                $voo->setVooId($linha['vooId']);
-                $voo->setTipoVoo($linha['tipoVoo']);
-                $voo->setOrigem($linha['origem']);
-                $voo->setDestino($linha['destino']);
-                $voo->setDataHoraPartida($linha['dataHoraPartida']);
-                $voo->setNumeroVoo($linha['numeroVoo']);
-                $voo->setValor($linha['valor']);
-                
-
-                array_push($this->listaVoosIda, $voo);
-            }
-            $sqlVolta->execute();
-
-            $resultado = $sqlVolta->setFetchMode(PDO::FETCH_ASSOC);
-            while ($linha = $sqlVolta->fetch(PDO::FETCH_ASSOC)) {
-                $voo = new Voo();
-                $voo->setVooId($linha['vooId']);
-                $voo->setTipoVoo($linha['tipoVoo']);
-                $voo->setOrigem($linha['origem']);
-                $voo->setDestino($linha['destino']);
-                $voo->setDataHoraPartida($linha['dataHoraPartida']);
-                $voo->setNumeroVoo($linha['numeroVoo']);
-                $voo->setValor($linha['valor']);
-                
-
-                array_push($this->listaVoosVolta, $voo);
-            }
-           
-            
-            
-
+            $this->a($dataIda,  $origem, $destino, 'ida');
+            $this->a($dataVolta, $destino,   $origem, 'volta');
         } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
         }
     }
 
-    public function buscaDadosVoo($vooIdaId, $vooVoltaId){
-        try{
+    public function buscaDadosVoo($vooIdaId, $vooVoltaId)
+    {
+        try {
             $conexao = Conexao::getConexao();
             $sql = $conexao->prepare("SELECT vooId, tipoVoo, origem, destino, dataHoraPartida, numeroVoo, valor, dataHoraChegada, qtdPassagem, codPassagem 
             FROM dblendarioairlines.voos where vooId in (:vooIdaId, :vooVoltaId)");
@@ -103,14 +93,14 @@ class Voo {
                 $voo->setValor($linha['valor']);
                 $voo->setCodigoPassagem($linha['codPassagem']);
                 array_push($this->dadosVoo, $voo);
-
             }
-        }   catch (PDOException $e) {
+        } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
         }
     }
 
-    public function compraVoo($usuarioId){
+    public function compraVoo($usuarioId)
+    {
         try {
             $conn = Conexao::getConexao();
 
@@ -130,114 +120,138 @@ class Voo {
             $sql2 = $conn->prepare("UPDATE dblendarioairlines.voos SET qtdPassagem = (qtdPassagem - 1) WHERE vooId = :vooId");
             $sql2->bindParam("vooId", $vooId);
             $sql2->execute();
-            
         } catch (PDOException $e) {
             echo "Connection failed: " . $e->getMessage();
         }
     }
 
-    public function getVooId() {
+    public function getVooId()
+    {
         return $this->vooId;
     }
 
-    public function setVooId($vooId) {
+    public function setVooId($vooId)
+    {
         $this->vooId = $vooId;
     }
 
-    public function getNumeroVoo() {
+    public function getNumeroVoo()
+    {
         return $this->numeroVoo;
     }
 
-    public function setNumeroVoo($numeroVoo) {
+    public function setNumeroVoo($numeroVoo)
+    {
         $this->numeroVoo = $numeroVoo;
     }
 
-    public function getValor() {
+    public function getValor()
+    {
         return $this->valor;
     }
 
-    public function setValor($valor) {
+    public function setValor($valor)
+    {
         $this->valor = $valor;
     }
 
-    public function getDataHoraPartida() {
+    public function getDataHoraPartida()
+    {
         return $this->dataHoraPartida;
     }
 
-    public function setDataHoraPartida($dataHoraPartida) {
+    public function setDataHoraPartida($dataHoraPartida)
+    {
         $this->dataHoraPartida = $dataHoraPartida;
     }
 
-    public function getDataHoraChegada() {
+    public function getDataHoraChegada()
+    {
         return $this->dataHoraChegada;
     }
 
-    public function setDataHoraChegada($dataHoraChegada) {
+    public function setDataHoraChegada($dataHoraChegada)
+    {
         $this->dataHoraChegada = $dataHoraChegada;
     }
 
-    public function getTipoVoo() {
+    public function getTipoVoo()
+    {
         return $this->tipoVoo;
     }
 
-    public function setTipoVoo($tipoVoo) {
+    public function setTipoVoo($tipoVoo)
+    {
         $this->tipoVoo = $tipoVoo;
     }
 
-    public function getCodigoPassagem() {
+    public function getCodigoPassagem()
+    {
         return $this->codigoPassagem;
     }
 
-    public function setCodigoPassagem($codigoPassagem) {
+    public function setCodigoPassagem($codigoPassagem)
+    {
         $this->codigoPassagem = $codigoPassagem;
     }
 
-    public function getQtdPassagem() {
+    public function getQtdPassagem()
+    {
         return $this->qtdPassagem;
     }
 
-    public function setQtdPassagem($qtdPassagem) {
+    public function setQtdPassagem($qtdPassagem)
+    {
         $this->qtdPassagem = $qtdPassagem;
     }
 
-    public function getOrigem() {
+    public function getOrigem()
+    {
         return $this->origem;
     }
 
-    public function setOrigem($origem) {
+    public function setOrigem($origem)
+    {
         $this->origem = $origem;
     }
 
-    public function getDestino() {
+    public function getDestino()
+    {
         return $this->destino;
     }
 
-    public function setDestino($destino) {
+    public function setDestino($destino)
+    {
         $this->destino = $destino;
     }
 
-    public function getListaVoosIda() {
+    public function getListaVoosIda()
+    {
         return $this->listaVoosIda;
     }
 
-    public function setListaVoosIda($listaVoosIda) {
+    public function setListaVoosIda($listaVoosIda)
+    {
         $this->listaVoosIda = $listaVoosIda;
     }
 
-    public function getListaVoosVolta() {
+    public function getListaVoosVolta()
+    {
         return $this->listaVoosVolta;
     }
 
-    public function setListaVoosVolta($listaVoosVolta) {
+    public function setListaVoosVolta($listaVoosVolta)
+    {
         $this->listaVoosVolta = $listaVoosVolta;
     }
 
-    public function getDadosVoo() {
+    public function getDadosVoo()
+    {
         return $this->dadosVoo;
     }
 
-    public function setDadosVoo($dadosVoo) {
+    public function setDadosVoo($dadosVoo)
+    {
         $this->dadosVoo = $dadosVoo;
     }
-
 }

@@ -58,8 +58,12 @@
                                 <?php echo $passagem->getlistaPassagensUsuario()[$cont]->getNumeroCadeira(); ?>
                             </div>
                             <div class="col-md-4">
-                            <input style="display:none;" name='passagemId' id='passagemId' value="<?php  echo $passagem->listaPassagensUsuario()[$cont]->getPassagemId()  ?>"/>
-                                <button type="submit" class="btn btn-primary">Cancelar</button> 
+                            <label >Checkin</label>
+                                <?php if($passagem->getlistaPassagensUsuario()[$cont]->getValidaCheckIn() !== 1){
+                                    echo ' <br/> CheckIn não realizado';
+                                }else{
+                                    echo '  <br/>CheckIn realizado';
+                                } ?>
                             </div>
                         </div>
                     </div>   
